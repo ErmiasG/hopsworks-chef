@@ -13,6 +13,7 @@ web_port = node['glassfish']['port']
 mysql_user=node['mysql']['user']
 mysql_password=node['mysql']['password']
 password_file = "#{theDomain}_admin_passwd"
+yarn_app_user = node['hops']['yarn']['user']
 
 bash "systemd_reload_for_glassfish_failures" do
   user "root"
@@ -146,6 +147,22 @@ group node['hops']['group'] do
   action :modify
   members ["#{node['hopsworks']['user']}", "#{node['jupyter']['user']}"]
   append true
+end
+
+## yarn_app user
+
+group node['hops']['yarn']["group"] do
+  action :create
+  not_if "getent group #{node['hops']['yarn']["group"]}"
+end
+
+user node['hops']['yarn']['user'] do
+  gid node['hops']['yarn']["group"]
+  manage_home true
+  home "/home/#{node['hops']['yarn']["user"]}"
+  action :create
+  shell "/bin/bash"
+  not_if "getent passwd #{node['hops']['yarn']["user"]}"
 end
 
 #update permissions of base_dir to 770
@@ -761,7 +778,8 @@ template "/etc/sudoers.d/glassfish" do
               :ca_keystore => "#{theDomain}/bin/ca-keystore.sh",
               :hive_user => node['hive2']['user'],
               :anaconda_prepare => "#{theDomain}/bin/anaconda-prepare.sh",
-              :start_llap => "#{theDomain}/bin/start-llap.sh"
+              :start_llap => "#{theDomain}/bin/start-llap.sh",
+              :mpi_service => "#{theDomain}/bin/mpi_service.sh"
             })
   action :create
 end

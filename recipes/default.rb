@@ -1258,6 +1258,21 @@ kagent_keys "#{homedir}" do
   action :return_publickey
 end
 
+yarn_app_homedir = "/home/#{node['hops']['yarn']['user']}"
+kagent_keys "#{yarn_app_homedir}" do
+  cb_user node['hops']['yarn']['user']
+  cb_group node['hops']['yarn']['user']
+  action :generate
+end
+
+kagent_keys "#{yarn_app_homedir}" do
+  cb_user node['hops']['yarn']['user']
+  cb_group node['hops']['yarn']['user']
+  cb_name "tensorflow"
+  cb_recipe "default"
+  action :return_publickey
+end
+
 hopsworks_grants "restart_glassfish" do
   action :reload_systemd
 end

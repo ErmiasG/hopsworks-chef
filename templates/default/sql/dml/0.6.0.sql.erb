@@ -9,3 +9,27 @@ REPLACE INTO `hopsworks`.`variables` VALUES ("spark_ui_logs_offset", "<%= node['
 REPLACE INTO `hopsworks`.`variables` VALUES ("provided_python_lib_names", "<%= node['conda']['provided_lib_names'] %>");
 
 REPLACE INTO `hopsworks`.`variables` VALUES ("preinstalled_python_lib_names", "<%= node['conda']['preinstalled_lib_names'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpirun_exec", "<%= node['mpi']['mpirun_exec'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_dir", "<%= node['mpi']['base_dir'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_log_dir", "<%= node['mpi']['log_dir'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_run_dir", "<%= node['mpi']['run_dir'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_example_dir", "<%= node['mpi']['example_dir'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_host_file", "<%= node['mpi']['host_file'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_log_retention", "<%= node['mpi']['log_retention'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_ps_term_wait", "<%= node['mpi']['ps_term_wait'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_log_cleanup_interval", "<%= node['mpi']['log_cleanup_interval'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_ps_monitoring_interval", "<%= node['mpi']['ps_monitoring_interval'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_resource_monitoring_interval", "<%= node['mpi']['resource_monitoring_interval'] %>");
+
+REPLACE INTO `hopsworks`.`variables` VALUES ("mpi_max_log_size_to_send", "<%= node['mpi']['max_log_size_to_send'] %>");

@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+set -e
+
+USAGE="Incorrect usage. mpi_service.sh [SIGSTAT | SIGINT | SIGTERM | SIGKILL | OMPI_TOP | MPIRUN | NVIDIA_SMI | OMPI_TOP_PID | OMPI_TOP_RSS | OMPI_TOP_PS] [ remote | local ] args."
+USAGE_REMOTE="Incorrect usage. mpi_service.sh [SIGSTAT | SIGINT | SIGTERM | SIGKILL | OMPI_TOP | MPIRUN | NVIDIA_SMI | OMPI_TOP_PID | OMPI_TOP_RSS | OMPI_TOP_PS] remote host args."
+if [ $# -lt 3 ]; then
+ echo ${USAGE}
+ exit 2
+fi
+
+OPT="$1"
+TYPE="$2"
+APP_USER="<%= node['hops']['yarn']['user'] %>"
+MPIRUN_EXC="<%= node['mpi']['mpirun_exc'] %>"
+HOST_FILE="<%= node['mpi']['host_file'] %>"
+RUNS_DIR="<%= node['mpi']['run_dir'] %>"
+RUNS_DIR_USER="<%= node['glassfish']['user'] %>"
+RUNS_DIR_GROUP="<%= node['hops']['group'] %>"
+
+if [ $# -lt 4 ] && [ "$TYPE" == "remote" ]; then
+ echo ${USAGE_REMOTE}
+ exit 2
+fi
+
+
+run_cmd () {
+  cmd="$@"
+  if [ "$APP_USER" == "$USER" ]
+  then
+    bash -c "$cmd"
+  else
+    su ${APP_USER} -c "$cmd"
+  fi
+}
+
+sig_stat () {
+  if [ "$TYPE" == "remote" ]
+  then
+    run_cmd "ssh $1 kill -0 $2"
+  elif [ "$TYPE" == "local" ]
+  then
+    run_cmd "kill -0 $1"
+  else
+    echo ${USAGE}
+  fi
+}
+
+sig_int () {
+  if [ "$TYPE" == "remote" ]
+  then
+    run_cmd "ssh $1 kill -SIGINT $2"
+  elif [ "$TYPE" == "local" ]
+  then
+    run_cmd "kill -SIGINT $1"
+  else
+    echo ${USAGE}
+  fi
+}
+
+sig_term () {
+  if [ "$TYPE" == "remote" ]
+  then
+    run_cmd "ssh $1 kill -SIGTERM $2"
+  elif [ "$TYPE" == "local" ]
+  then
+    run_cmd "kill -SIGTERM $1"
+  else
+    echo ${USAGE}
+  fi
+}
+
+sig_kill () {
+  if [ "$TYPE" == "remote" ]
+  then
+    run_cmd "ssh $1 kill -SIGKILL $2"
+  elif [ "$TYPE" == "local" ]
+  then
+    run_cmd "kill -SIGKILL $1"
+  else
+    echo ${USAGE}
+  fi
+}
+
+ompi_top () {
+  if [ "$TYPE" == "remote" ]
+  then
+    run_cmd "ssh $1 ompi-top --pid $2"
+  elif [ "$TYPE" == "local" ]
+  then
+    run_cmd "ompi-top --pid $1"
+  else
+    echo ${USAGE}
+  fi
+}
+
+create_run_dir () {
+  RUN_DIR=${RUNS_DIR}/$1
+  sudo mkdir $RUN_DIR
+  sudo chown $RUNS_DIR_USER:$RUNS_DIR_GROUP $RUN_DIR
+  sudo chmod 770 $RUN_DIR
+}
+
+mpirun () {
+  if [ "$TYPE" == "remote" ]
+  then
+    create_run_dir $2
+    RUN_FILE=${RUN_DIR}/$3
+    run_cmd "ssh $1 $MPIRUN_EXC --report-bindings --tag-output --timestamp-output -bind-to none -map-by slot --hostfile $HOST_FILE --report-pid $RUN_FILE ${@:4}"
+  elif [ "$TYPE" == "local" ]
+  then
+    create_run_dir $1
+    RUN_FILE=${RUN_DIR}/$2
+    run_cmd "$MPIRUN_EXC --report-bindings --tag-output --timestamp-output -bind-to none -map-by slot --hostfile $HOST_FILE --report-pid $RUN_FILE ${@:3}"
+  else
+    echo ${USAGE}
+  fi
+}
+
+nvidia_smi () {
+  if [ "$TYPE" == "remote" ]
+  then
+    run_cmd "ssh $1 nvidia-smi --query-compute-apps=gpu_uuid,pid --format=csv,noheader" | awk -v var=$2 -F',' '{if ($2==var) {print $1,$2}}'
+  elif [ "$TYPE" == "local" ]
+  then
+    run_cmd "nvidia-smi --query-compute-apps=gpu_uuid,pid --format=csv,noheader" | awk -v var=$1 -F',' '{if ($2==var) {print $1,$2}}'
+  else
+    echo ${USAGE}
+  fi
+}
+
+ompi_top_pid () {
+  ompi_top "$@" | awk -F'|' '{if (NR>3) {print $2,$4}}' 
+}
+
+ompi_top_rss () {
+  ompi_top "$@" | awk -F'|' '{if (NR>3) {print $2,$10}}'
+}
+
+ompi_top_processor () {
+  ompi_top "$@" | awk -F'|' '{if (NR>3) {print $12}}'
+}
+ 
+case ${OPT} in
+  "SIGSTAT")
+    sig_stat "${@:3}"
+    ;;
+  "SIGINT")
+    sig_int "${@:3}"
+    ;;
+  "SIGTERM")
+    sig_term "${@:3}"
+    ;;
+  "SIGKILL")
+    sig_kill "${@:3}"
+    ;;
+  "OMPI_TOP")
+    ompi_top "${@:3}"
+    ;;
+  "MPIRUN")
+    mpirun "${@:3}"
+    ;;
+  "NVIDIA_SMI")
+    nvidia_smi "${@:3}"
+    ;;
+  "OMPI_TOP_PID")
+    ompi_top_pid "${@:3}"
+    ;;
+  "OMPI_TOP_RSS")
+    ompi_top_rss "${@:3}"
+    ;;
+  "OMPI_TOP_PS")
+    ompi_top_processor "${@:3}"
+    ;;
+  *) echo ${USAGE};;
+esac

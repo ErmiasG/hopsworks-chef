@@ -67,3 +67,35 @@ ALTER TABLE `hopsworks`.`tf_serving` ADD COLUMN `lock_ip` VARCHAR(15) DEFAULT NU
 ALTER TABLE `hopsworks`.`tf_serving` ADD COLUMN `lock_timestamp` BIGINT DEFAULT NULL;
 
 ALTER TABLE `hopsworks`.`tf_serving` ADD FOREIGN KEY `user_fk` (`creator`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+CREATE TABLE IF NOT EXISTS `mpi_child_ps` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `runid` int(11) NOT NULL,
+  `host` varchar(45) NOT NULL,
+  `pid` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_mpi_child_ps_1_idx` (`runid`),
+  CONSTRAINT `fk_mpi_child_ps_1` FOREIGN KEY (`runid`) REFERENCES `mpi_job_run` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=ndbcluster DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+CREATE TABLE IF NOT EXISTS `mpi_job_gpu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `runid` int(11) NOT NULL,
+  `gpu_uuid` varchar(45) NOT NULL,
+  `host` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_mpi_job_gpu_1_idx` (`runid`),
+  CONSTRAINT `fk_mpi_job_gpu_1` FOREIGN KEY (`runid`) REFERENCES `mpi_job_run` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=ndbcluster DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+CREATE TABLE IF NOT EXISTS `mpi_job_run` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `appid` varchar(45) NOT NULL,
+  `pid` int(11) NOT NULL,
+  `runid` int(11) NOT NULL,
+  `executor_cores` int(11) NOT NULL,
+  `executor_memory` varchar(45) NOT NULL,
+  `job_monitoring_state` varchar(45) NOT NULL DEFAULT 'RUNNING',
+  PRIMARY KEY (`id`),
+  KEY `fk_mpi_job_run_1_idx` (`appid`)
+) ENGINE=ndbcluster DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;

@@ -12,4 +12,4 @@
 <%= @user %> ALL=NOPASSWD: <%= @tensorboard %>
 <%= @user %> ALL=NOPASSWD: <%= @anaconda_prepare %>
 <%= @user %> ALL=(<%= @hive_user %>) NOPASSWD: <%= @start_llap %>
-
+<%= @user %> ALL=NOPASSWD: <%= @mpi_service %>

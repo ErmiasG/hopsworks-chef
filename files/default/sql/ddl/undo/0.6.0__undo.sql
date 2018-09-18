@@ -35,3 +35,7 @@ ALTER TABLE `hopsworks`.`tf_serving` DROP COLUMN `lock_ip` VARCHAR(15) DEFAULT N
 ALTER TABLE `hopsworks`.`tf_serving` DROP COLUMN `lock_timestamp` BIGINT DEFAULT NULL;
 
 ALTER TABLE `hopsworks`.`tf_serving` ADD FOREIGN KEY `user_fk` (`creator`) REFERENCES `users` (`email`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+DROP TABLE IF EXISTS `mpi_child_ps`;
+DROP TABLE IF EXISTS `mpi_job_gpu`;
+DROP TABLE IF EXISTS `mpi_job_run`;
