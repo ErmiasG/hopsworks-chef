@@ -149,17 +149,6 @@ group node['hops']['group'] do
   append true
 end
 
-## yarn_app user
-
-user node['hops']['yarnapp']['user'] do
-  gid node['hops']['group']
-  manage_home true
-  home "/home/#{node['hops']['yarnapp']['user']}"
-  action :create
-  shell "/bin/bash"
-  not_if "getent passwd #{node['hops']['yarnapp']['user']}"
-end
-
 #update permissions of base_dir to 770
 directory node['jupyter']['base_dir']  do
   owner node['jupyter']['user']
