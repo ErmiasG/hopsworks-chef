@@ -1261,13 +1261,13 @@ end
 yarn_app_homedir = "/home/#{node['hops']['yarnapp']['user']}"
 kagent_keys "#{yarn_app_homedir}" do
   cb_user node['hops']['yarnapp']['user']
-  cb_group node['hops']['yarnapp']['user']
+  cb_group node['hops']['group']
   action :generate
 end
 
 kagent_keys "#{yarn_app_homedir}" do
   cb_user node['hops']['yarnapp']['user']
-  cb_group node['hops']['yarnapp']['user']
+  cb_group node['hops']['group']
   cb_name "tensorflow"
   cb_recipe "default"
   action :return_publickey
