@@ -151,18 +151,13 @@ end
 
 ## yarn_app user
 
-group node['hops']['yarn']["group"] do
-  action :create
-  not_if "getent group #{node['hops']['yarn']["group"]}"
-end
-
-user node['hops']['yarn']['user'] do
-  gid node['hops']['yarn']["group"]
+user node['hops']['yarnapp']['user'] do
+  gid node['hops']['group']
   manage_home true
-  home "/home/#{node['hops']['yarn']["user"]}"
+  home "/home/#{node['hops']['yarnapp']['user']}"
   action :create
   shell "/bin/bash"
-  not_if "getent passwd #{node['hops']['yarn']["user"]}"
+  not_if "getent passwd #{node['hops']['yarnapp']['user']}"
 end
 
 #update permissions of base_dir to 770
