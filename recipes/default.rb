@@ -1268,8 +1268,10 @@ end
 kagent_keys "#{yarn_app_homedir}" do
   cb_user node['hops']['yarnapp']['user']
   cb_group node['hops']['group']
-  cb_name "tensorflow"
+  cb_name "hopsworks"
   cb_recipe "default"
+  tg_name "tensorflow"
+  tg_recipe "default"
   action :return_publickey
 end
 
