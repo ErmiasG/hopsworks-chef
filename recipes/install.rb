@@ -741,6 +741,14 @@ template "#{theDomain}/bin/dump_web_logs_to_hdfs.sh" do
             })
 end
 
+template "#{theDomain}/bin/mpi_service.sh" do
+  source "mpi_service.sh.erb"
+  owner node['glassfish']['user']
+  group node['glassfish']['group']
+  mode "550"
+  action :create
+end
+
 template "/etc/sudoers.d/glassfish" do
   source "glassfish_sudoers.erb"
   owner "root"
