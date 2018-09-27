@@ -985,7 +985,7 @@ if node['tensorflow']['mpi'].eql? "true"
     source "hostFile.erb"
     owner node['glassfish']['user']
     group node['hops']['group']
-    mode 750
+    mode "750"
     action :create
     variables :hosts => node['mpi']['hosts']
   end

@@ -29,7 +29,7 @@ run_cmd () {
   then
     bash -c "$cmd"
   else
-    su ${APP_USER} -c "$cmd"
+    su -m ${APP_USER} -c "$cmd"
   fi
 }
 
