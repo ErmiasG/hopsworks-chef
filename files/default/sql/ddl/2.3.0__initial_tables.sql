@@ -712,7 +712,7 @@ CREATE TABLE `oauth_login_state` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `login_state_UNIQUE` (`state`),
   KEY `fk_oauth_login_state_client` (`client_id`),
-  CONSTRAINT `fk_oauth_login_state_client` FOREIGN KEY (`client_id`) REFERENCES `oauth_client` (`client_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `fk_oauth_login_state_client` FOREIGN KEY (`client_id`) REFERENCES `oauth_client` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=ndbcluster DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

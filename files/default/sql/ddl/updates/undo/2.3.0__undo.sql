@@ -10,3 +10,8 @@ ALTER TABLE `hopsworks`.`training_dataset_feature` DROP FOREIGN KEY `tfn_fk_tdf`
 DROP TABLE `hopsworks`.`transformation_function`;
 
 ALTER TABLE `hopsworks`.`training_dataset_join` DROP COLUMN `prefix`;
+
+ALTER TABLE `hopsworks`.`oauth_login_state` DROP FOREIGN KEY `fk_oauth_login_state_client`;
+
+ALTER TABLE `hopsworks`.`oauth_login_state` ADD CONSTRAINT `fk_oauth_login_state_client`
+  FOREIGN KEY (`client_id`) REFERENCES `hopsworks`.`oauth_client` (`client_id`) ON DELETE CASCADE ON UPDATE NO ACTION;

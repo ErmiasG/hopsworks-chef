@@ -76,3 +76,8 @@ ALTER TABLE `hopsworks`.`training_dataset_feature` ADD COLUMN `transformation_fu
   ADD CONSTRAINT `tfn_fk_tdf` FOREIGN KEY (`transformation_function`) REFERENCES `hopsworks`.`transformation_function` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION;
 
 ALTER TABLE `hopsworks`.`training_dataset_join` ADD COLUMN `prefix` VARCHAR(63) NULL;
+
+ALTER TABLE `hopsworks`.`oauth_login_state` DROP FOREIGN KEY `fk_oauth_login_state_client`;
+
+ALTER TABLE `hopsworks`.`oauth_login_state` ADD CONSTRAINT `fk_oauth_login_state_client`
+  FOREIGN KEY (`client_id`) REFERENCES `hopsworks`.`oauth_client` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE;
